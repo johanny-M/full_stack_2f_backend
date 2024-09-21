@@ -1,12 +1,20 @@
 # Stage 1: Build the Go application
 FROM golang:1.18-alpine AS builder
 
+
+# Set Go environment variables 
+
+ENV GOPATH=/go
+
+ENV GOROOT=usr/local/go
+
 # Set the working directory
 WORKDIR /app
 
 # Copy go.mod and go.sum to download dependencies first
 COPY go.mod go.sum ./
-RUN go mod download
+
+RUN go mod download -x
 
 # Copy the source code
 COPY . .

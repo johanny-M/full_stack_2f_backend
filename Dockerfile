@@ -1,38 +1,26 @@
-# Stage 1: Build the Go application
 FROM golang:1.18-alpine AS builder
-
-
-# Set Go environment variables 
-
-ENV GOPATH=/go
-
-ENV GOROOT=usr/local/go
 
 # Set the working directory
 WORKDIR /app
 
 # Copy go.mod and go.sum to download dependencies first
 COPY go.mod go.sum ./
-
-RUN go mod download -x
+RUN go mod download
 
 # Copy the source code
 COPY . .
 
-# Build the application
-RUN go build -o main .
+# Build the Go application
+RUN go build -o todoapp main.go
 
-# Stage 2: Create the lightweight final image
+# Stage 2: Run the Go application
 FROM alpine:latest
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/main .
+# Copy the binary from the builder stage
+COPY --from=builder /app/todoapp .
 
-# Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the application
-CMD ["./main"]
+CMD ["./todoapp"]

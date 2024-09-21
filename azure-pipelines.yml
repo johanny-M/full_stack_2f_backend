@@ -3,13 +3,14 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-
 trigger:
 - main
 
 pool: my-personal-computer
 
 steps:
+- checkout: self
+
 - task: CopyFiles@2
   inputs:
     Contents: '**'
@@ -52,10 +53,11 @@ steps:
     repository: 'johannyet/full_stack_2f_backend'  
     tags: '$(CommitHash)'  
 
+# Uncomment and configure the SSH task if needed
 # - task: SSH@0
 #   inputs:
 #     sshEndpoint: 'your-ssh-endpoint'  # Define your SSH service connection in Azure DevOps
 #     runOptions: 'inline'
 #     inline: |
-#       docker pull your-dockerhub-username/myapp:$(CommitHash)
-#       docker service update --image your-dockerhub-username/myapp:$(CommitHash) your_service_name  # Replace with your service name
+#       docker pull johannyet/full_stack_2f_backend:$(CommitHash)
+#       docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name  # Replace with your service name

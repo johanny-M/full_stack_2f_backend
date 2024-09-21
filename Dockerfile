@@ -1,32 +1,30 @@
 # Stage 1: Build the Go application
 FROM golang:1.18-alpine AS builder
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the go.mod and go.sum files to install dependencies
+# Copy go.mod and go.sum to download dependencies first
 COPY go.mod go.sum ./
-
-# Download all the dependencies. Dependencies will be cached if the go.mod and go.sum files are unchanged
 RUN go mod download
 
-# Copy the rest of the application source code
+# Copy the source code
 COPY . .
 
-# Build the Go application
+# Build the application
 RUN go build -o main .
 
-# Stage 2: Run the Go application
+# Stage 2: Create the lightweight final image
 FROM alpine:latest
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the binary from the builder stage
+# Copy the built binary from the builder stage
 COPY --from=builder /app/main .
 
-# Expose the port the app runs on (adjust to match your app's configuration)
+# Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the Go app
+# Command to run the application
 CMD ["./main"]

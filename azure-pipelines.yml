@@ -23,7 +23,7 @@ steps:
 
 - task: GoTool@0
   inputs:
-    version: '1.18.0'  # Specify the Go version directly
+    version: '1.21.0'  # Specify the Go version directly
 
 - script: |
     go version

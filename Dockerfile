@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
-RUN go mod download
+RUN --mount=type=cache,target="/root/.cache/go-build" --mount=type=cache,target="/go/pkg/mod" go build -a -o service ./cmd/service
 
 # Copy the source code
 COPY . .

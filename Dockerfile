@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine AS builder
+FROM golang:1.20-alpine AS builder
 
 # Install dependencies for building Go applications
 RUN apk add --no-cache git

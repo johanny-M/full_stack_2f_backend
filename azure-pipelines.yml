@@ -53,11 +53,13 @@ steps:
     repository: 'johannyet/full_stack_2f_backend'  
     tags: '$(CommitHash)'  
 
-# Uncomment and configure the SSH task if needed
-# - task: SSH@0
-#   inputs:
-#     sshEndpoint: 'your-ssh-endpoint'  # Define your SSH service connection in Azure DevOps
-#     runOptions: 'inline'
-#     inline: |
-#       docker pull johannyet/full_stack_2f_backend:$(CommitHash)
-#       docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name  # Replace with your service name
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'deploy'  # Define your SSH service connection in Azure DevOps
+    runOptions: 'inline'
+    inline: |
+      # Pull the image using the commit hash
+      docker pull johannyet/full_stack_2f_backend:$(CommitHash)
+
+      # Update the Docker service with the new image
+      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name  

@@ -23,9 +23,14 @@ steps:
 
 - task: GoTool@0
   inputs:
-    version: '1.18'
+    version: '1.18.0'  # Specify the Go version directly
 
-- task: Go@0
-  inputs:
-    command: 'build'
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/main'
+- script: |
+    go version
+    which go
+  displayName: 'Check Go Version and Path'
+
+- script: |
+    go build
+  displayName: 'Build with Go'
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'  # Adjust if necessary

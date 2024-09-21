@@ -23,7 +23,7 @@ steps:
 
 - task: GoTool@0
   inputs:
-    version: '1.21.0'  # Specify the Go version directly
+    version: '1.21.0'  
 
 - script: |
     go version
@@ -31,6 +31,31 @@ steps:
   displayName: 'Check Go Version and Path'
 
 - script: |
-    go build
+    go build -o main .  # Specify output binary name to match Dockerfile
   displayName: 'Build with Go'
-  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'  # Adjust if necessary
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'  
+
+- script: |
+    echo "##vso[task.setvariable variable=CommitHash]$(Build.SourceVersion:0:4)"  # Get the first 4 digits of the commit hash
+  displayName: 'Set Commit Hash Variable'
+
+- task: Docker@2
+  inputs:
+    command: 'build'
+    repository: 'johannyet/full_stack_2f_backend'  
+    Dockerfile: '$(Build.ArtifactStagingDirectory)/main/Dockerfile'  
+    tags: '$(CommitHash)'  
+
+- task: Docker@2
+  inputs:
+    command: 'push'
+    repository: 'johannyet/full_stack_2f_backend'  
+    tags: '$(CommitHash)'  
+
+# - task: SSH@0
+#   inputs:
+#     sshEndpoint: 'your-ssh-endpoint'  # Define your SSH service connection in Azure DevOps
+#     runOptions: 'inline'
+#     inline: |
+#       docker pull your-dockerhub-username/myapp:$(CommitHash)
+#       docker service update --image your-dockerhub-username/myapp:$(CommitHash) your_service_name  # Replace with your service name

@@ -22,6 +22,15 @@ steps:
     echo "CommitHash is: $(CommitHash)"
   displayName: 'Verify CommitHash'
 
+# Update Go modules
+- script: |
+    go clean -modcache
+    rm go.sum
+    go mod tidy
+    go mod vendor  # Remove this line if not using vendoring
+  displayName: 'Update Go Modules'
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'
+
 # Copy the necessary files to the artifact staging directory (including Dockerfile)
 - task: CopyFiles@2
   inputs:
@@ -32,8 +41,9 @@ steps:
 - task: Docker@2
   inputs:
     command: 'build'
-    repository: 'johannyet/full_stack_2f_backend'  
+    repository: 'johannyet/full_stack_2f_backend'
     Dockerfile: '$(Build.ArtifactStagingDirectory)/main/Dockerfile'
+    buildContext: '$(Build.ArtifactStagingDirectory)/main'
     tags: '$(CommitHash)'
 
 # Push the Docker image to Docker Hub

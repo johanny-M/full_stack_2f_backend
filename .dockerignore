@@ -1,0 +1,6 @@
+azure-pipelines.yml
+
+.git
+.gitignore
+
+vendor/

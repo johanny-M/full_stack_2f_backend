@@ -17,7 +17,7 @@ COPY cmd/ ./cmd/
 RUN ls -la /app
 
 # Build the Go application
-RUN go build -o todoapp ./main.go 
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o todoapp ./main.go
 
 # Final stage: create a lightweight image
 FROM alpine:latest

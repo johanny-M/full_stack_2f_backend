@@ -12,6 +12,8 @@ RUN go mod download
 # Copy the entire application code into the container
 COPY . .
 
+RUN ls -la /app
+
 # Build the Go application
 RUN go build -o todoapp ./main.go  # Make sure main.go is accessible from here
 

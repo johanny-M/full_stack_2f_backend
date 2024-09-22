@@ -9,8 +9,9 @@ steps:
 
 # Set the CommitHash (full commit hash)
 - script: |
-    echo "##vso[task.setvariable variable=CommitHash]$(git rev-parse HEAD)"
-  displayName: 'Set Full Commit Hash Variable'
+    echo "##vso[task.setvariable variable=CommitHash]$(Build.SourceVersion)"
+    echo "Last 4 digits of CommitHash: $(echo $(Build.SourceVersion) | tail -c 5)"
+  displayName: 'Set Commit Hash Variable'
 
 # Copy the necessary files to the artifact staging directory (including Dockerfile)
 - task: CopyFiles@2
@@ -54,5 +55,5 @@ steps:
     runOptions: 'inline'
     inline: |
       # Create or update Backend Service
-      docker service create --name backend_service --replicas 2 --publish 5000:5000 johannyet/full_stack_2f_backend:$(CommitHash) || \
-      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) backend_service
+      sudo docker service create --name backend_service --replicas 2 --publish 5000:5000 johannyet/full_stack_2f_backend:$(CommitHash) || \
+      sudo docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) backend_service

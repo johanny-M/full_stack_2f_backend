@@ -29,21 +29,26 @@ steps:
     go mod tidy
     go mod vendor  # Remove this line if not using vendoring
   displayName: 'Update Go Modules'
-  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'
+  workingDirectory: '$(Build.SourcesDirectory)'  # Adjust as needed
 
 # Copy the necessary files to the artifact staging directory (including Dockerfile)
 - task: CopyFiles@2
   inputs:
     Contents: '**/Dockerfile'  # Ensure Dockerfile is copied
-    TargetFolder: '$(Build.ArtifactStagingDirectory)/main'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'  # No subfolder
+
+# List files in Artifact Staging Directory for debugging
+- script: |
+    ls -la $(Build.ArtifactStagingDirectory)
+  displayName: 'List files in Artifact Staging Directory'
 
 # Build the Docker image and tag it with the commit hash
 - task: Docker@2
   inputs:
     command: 'build'
     repository: 'johannyet/full_stack_2f_backend'
-    Dockerfile: '$(Build.ArtifactStagingDirectory)/main/Dockerfile'
-    buildContext: '$(Build.ArtifactStagingDirectory)/main'
+    Dockerfile: '$(Build.ArtifactStagingDirectory)/Dockerfile'  # Adjust as needed
+    buildContext: '$(Build.ArtifactStagingDirectory)'  # No subfolder
     tags: '$(CommitHash)'
 
 # Push the Docker image to Docker Hub

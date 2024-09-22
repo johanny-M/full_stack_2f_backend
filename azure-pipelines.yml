@@ -7,29 +7,10 @@ steps:
 # Checkout the repository code
 - checkout: self
 
-# Check if git is available
-- script: |
-    git --version
-  displayName: 'Check Git Version'
-
 # Set the CommitHash (full commit hash)
 - script: |
     echo "##vso[task.setvariable variable=CommitHash]$(git rev-parse HEAD)"
   displayName: 'Set Full Commit Hash Variable'
-
-# Verify that CommitHash is set correctly
-- script: |
-    echo "CommitHash is: $(CommitHash)"
-  displayName: 'Verify CommitHash'
-
-# Update Go modules
-- script: |
-    go clean -modcache
-    rm go.sum
-    go mod tidy
-    go mod vendor  # Remove this line if not using vendoring
-  displayName: 'Update Go Modules'
-  workingDirectory: '$(Build.SourcesDirectory)'  # Adjust as needed
 
 # Copy the necessary files to the artifact staging directory (including Dockerfile)
 - task: CopyFiles@2

@@ -28,4 +28,6 @@ COPY --from=builder /app/todoapp .
 
 RUN chmod +x todoapp
 
+EXPOSE 5000
+
 CMD ["./todoapp"]

@@ -1,65 +1,84 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
-pool: my-personal-computer
+pool: 'my-personal-computer'  # Ensure this is the correct self-hosted agent pool
 
 steps:
+# Checkout the repository code
 - checkout: self
 
+# Copy the necessary files to the artifact staging directory
 - task: CopyFiles@2
   inputs:
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/main'
 
+# Publish the artifacts (optional step, useful for later retrieval)
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
 
+# Set up the Go version
 - task: GoTool@0
   inputs:
-    version: '1.21.0'  
+    version: '1.21.0'  # Specify the Go version you want to use
 
+# Check Go version and path to verify setup
 - script: |
     go version
     which go
   displayName: 'Check Go Version and Path'
 
+# Build the Go project (output binary name is 'main')
 - script: |
-    go build -o main .  # Specify output binary name to match Dockerfile
-  displayName: 'Build with Go'
-  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'  
+    go build -o main .  # Ensure that your Dockerfile uses this output binary
+  displayName: 'Build Go Binary'
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/main'
 
+# Set the CommitHash as an environment variable
 - script: |
-    echo "##vso[task.setvariable variable=CommitHash]$(Build.SourceVersion:0:4)"  # Get the first 4 digits of the commit hash
+    echo "##vso[task.setvariable variable=CommitHash]$(Build.SourceVersion:0:4)"  # First 4 digits of the commit hash
   displayName: 'Set Commit Hash Variable'
 
+# Verify that CommitHash is set correctly
+- script: |
+    echo "CommitHash is: $(CommitHash)"
+  displayName: 'Verify Commit Hash'
+
+# Build the Docker image and tag it with the commit hash
 - task: Docker@2
   inputs:
     command: 'build'
     repository: 'johannyet/full_stack_2f_backend'  
-    Dockerfile: '$(Build.ArtifactStagingDirectory)/main/Dockerfile'  
-    tags: '$(CommitHash)'  
+    Dockerfile: '$(Build.ArtifactStagingDirectory)/main/Dockerfile'  # Ensure Dockerfile location is correct
+    tags: '$(CommitHash)'  # Use the captured CommitHash as the tag
 
+# Push the Docker image to Docker Hub
 - task: Docker@2
   inputs:
     command: 'push'
     repository: 'johannyet/full_stack_2f_backend'  
-    tags: '$(CommitHash)'  
+    tags: '$(CommitHash)'  # Push the image tagged with the commit hash
 
+# SSH into the Docker Swarm manager and update the service
 - task: SSH@0
   inputs:
-    sshEndpoint: 'deploy'  # Define your SSH service connection in Azure DevOps
+    sshEndpoint: 'deploy'  # Define SSH service connection in Azure DevOps
     runOptions: 'inline'
     inline: |
-      # Pull the image using the commit hash
+      # Pull the Docker image from Docker Hub
       docker pull johannyet/full_stack_2f_backend:$(CommitHash)
 
-      # Update the Docker service with the new image
-      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name  
+      # Update the Docker Swarm service with the new image
+      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name
+
+# Optional: List Docker images to confirm the correct image is pulled
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'deploy'  # Use the same SSH endpoint as above
+    runOptions: 'inline'
+    inline: |
+      docker images --filter=reference=johannyet/full_stack_2f_backend
+  displayName: 'List Docker Images on Manager Node'

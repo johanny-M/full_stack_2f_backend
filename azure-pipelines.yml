@@ -12,7 +12,7 @@ steps:
     # Extract the last 4 digits of the commit hash
     shortCommitHash=$(echo "$(Build.SourceVersion)" | tail -c 5)
     echo "##vso[task.setvariable variable=CommitHash]$shortCommitHash"
-    echo "Last 4 digits of CommitHash: $shortCommitHash"
+    echo "Using short commit hash: ${shortCommitHash}"
   displayName: 'Set Commit Hash Variable'
 
 # Copy the necessary files to the artifact staging directory (including Dockerfile)

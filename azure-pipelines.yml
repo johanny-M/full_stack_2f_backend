@@ -24,7 +24,6 @@ steps:
       go.sum 
       go.mod
       main.go
-      cmd/
    TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
 

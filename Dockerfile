@@ -12,9 +12,7 @@ RUN go mod download
 # Copy the entire application code into the container
 COPY . .
 
-RUN ls -la /app
-
-COPY main.go .
+COPY cmd/ ./cmd/
 
 RUN ls -la /app
 

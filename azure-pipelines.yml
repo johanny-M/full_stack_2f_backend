@@ -25,12 +25,6 @@ steps:
       go.mod
    TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
-- task: CopyFiles@2
-  inputs:
-    Contents: |
-       go.mod
-       go.sum
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 # List files in Artifact Staging Directory for debugging
 - script: |

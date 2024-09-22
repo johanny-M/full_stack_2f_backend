@@ -23,6 +23,7 @@ steps:
    Contents: | 
       go.sum 
       go.mod
+      main.go
    TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
 

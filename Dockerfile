@@ -3,26 +3,23 @@ FROM golang:1.21 AS builder
 
 WORKDIR /app
 
-# Copy go.mod and go.sum first
+# Copy go.mod and go.sum files
 COPY go.mod go.sum ./
 
-# Update Go modules and clean up cache
-RUN go mod tidy && go mod download
+# Download dependencies
+RUN go mod download
 
-# Copy the rest of the application code, including main.go
+# Copy the entire application code into the container
 COPY . .
 
 # Build the Go application
-RUN go build -o todoapp main.go  # Ensure this path is correct
+RUN go build -o todoapp ./main.go  # Make sure main.go is accessible from here
 
-# Final stage
+# Final stage: create a lightweight image
 FROM alpine:latest
-
 
 WORKDIR /root/
 
-
 COPY --from=builder /app/todoapp .
-
 
 CMD ["./todoapp"]

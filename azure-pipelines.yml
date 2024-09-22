@@ -59,6 +59,4 @@ steps:
     sshEndpoint: 'deploy'  # Your SSH service connection
     runOptions: 'inline'
     inline: |
-      # Create or update Backend Service
-      sudo docker service create --name backend_service --replicas 2 --publish 5000:5000 johannyet/full_stack_2f_backend:$(shortCommitHash) || \
       sudo docker service update --image johannyet/full_stack_2f_backend:$(shortCommitHash) backend_service

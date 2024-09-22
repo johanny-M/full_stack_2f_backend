@@ -18,13 +18,13 @@ steps:
     Contents: '**/Dockerfile'  # Ensure Dockerfile is copied
     TargetFolder: '$(Build.ArtifactStagingDirectory)'  # No subfolder
 
-- task: CopyFiles@2
-  inputs:
-   Contents: | 
-      go.sum 
-      go.mod
-      main.go
-   TargetFolder: '$(Build.ArtifactStagingDirectory)' 
+# - task: CopyFiles@2
+#   inputs:
+#    Contents: | 
+#       go.sum 
+#       go.mod
+#       main.go
+#    TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
 
 # List files in Artifact Staging Directory for debugging

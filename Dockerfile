@@ -1,31 +1,31 @@
-FROM golang:1.20-alpine AS builder
+# Start with the Go base image
+FROM golang:1.21 AS builder
 
-# Install dependencies for building Go applications
-RUN apk add --no-cache git
-
-# Set the working directory
 WORKDIR /app
 
-# Copy the go.mod and go.sum files
+# Copy go.mod and go.sum files
 COPY go.mod go.sum ./
 
-# Download dependencies
-RUN go mod download
+# Update Go modules and clean up cache
+RUN echo "Checking Go version..." && \
+    go version && \
+    echo "Cleaning module cache..." && \
+    go clean -modcache && \
+    echo "Removing go.sum..." && \
+    rm -f go.sum && \
+    echo "Running go mod tidy..." && \
+    go mod tidy && \
+    echo "Downloading dependencies..." && \
+    go mod download
 
-# Copy the rest of the source code
+# Copy the rest of the application code
 COPY . .
 
-# Build the Go application
-RUN go build -o todoapp main.go
+# Build the application
+RUN go build -o main .
 
-# Stage 2: Create a lightweight image for the application
+# Final stage
 FROM alpine:latest
-
-WORKDIR /app
-
-# Copy the binary from the builder stage
-COPY --from=builder /app/todoapp .
-
-EXPOSE 8080
-
-CMD ["./todoapp"]
+WORKDIR /root/
+COPY --from=builder /app/main .
+CMD ["./main"]

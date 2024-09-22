@@ -10,10 +10,13 @@ steps:
 # Set the CommitHash (full commit hash)
 - script: |
     # Extract the last 4 digits of the commit hash
-    echo "##vso[task.setvariable variable=CommitHash]$(Build.SourceVersion)"
-    shortCommitHash=$(echo "$(Build.SourceVersion)" | tail -c 5)
+    shortCommitHash=$(echo $(Build.SourceVersion) | tail -c 5)
     echo "Using short commit hash: ${shortCommitHash}"
+    
+    # Set the variable for later use in the pipeline
+    echo "##vso[task.setvariable variable=shortCommitHash]${shortCommitHash}"
   displayName: 'Set Commit Hash Variable'
+
 
 # Copy the necessary files to the artifact staging directory (including Dockerfile)
 - task: CopyFiles@2
@@ -40,7 +43,7 @@ steps:
     repository: 'johannyet/full_stack_2f_backend'
     Dockerfile: '$(Build.ArtifactStagingDirectory)/Dockerfile'  # Adjust as needed
     buildContext: '$(Build.ArtifactStagingDirectory)'  # No subfolder
-    tags: '$(shortCommitHash)'
+    tags: '$(shortCommitHash)'  # This will now reference the short commit hash
     arguments: '--no-cache'
 
 # Push the Docker image to Docker Hub

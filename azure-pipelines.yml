@@ -47,11 +47,12 @@ steps:
     repository: 'johannyet/full_stack_2f_backend'
     tags: '$(CommitHash)'
 
-# SSH into Docker Swarm manager and update the service
 - task: SSH@0
+  displayName: 'Deploy to Docker Swarm'
   inputs:
-    sshEndpoint: 'deploy'
+    sshEndpoint: 'deploy'  # Your SSH service connection
     runOptions: 'inline'
     inline: |
-      docker pull johannyet/full_stack_2f_backend:$(CommitHash)
-      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) your_service_name
+      # Create or update Backend Service
+      docker service create --name backend_service --replicas 2 --publish 5000:5000 johannyet/full_stack_2f_backend:$(CommitHash) || \
+      docker service update --image johannyet/full_stack_2f_backend:$(CommitHash) backend_service

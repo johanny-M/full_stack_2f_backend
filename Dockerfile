@@ -30,4 +30,4 @@ RUN chmod +x todoapp
 
 EXPOSE 5000
 
-CMD ["./todoapp"]
+CMD ["./todoapp", "start", "-f", "/app/config.yml"]

@@ -59,4 +59,4 @@ steps:
     sshEndpoint: 'deploy'  # Your SSH service connection
     runOptions: 'inline'
     inline: |
-      sudo docker service update --image johannyet/full_stack_2f_backend:$(shortCommitHash) backend_service
+      sudo docker service update -env-add CONFIG_PATH="/app/config.yml" --image johannyet/full_stack_2f_backend:$(shortCommitHash) backend_service

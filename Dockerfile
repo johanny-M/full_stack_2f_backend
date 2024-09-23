@@ -1,7 +1,7 @@
 # Start with the Go base image
 FROM golang:1.21 AS builder
 
-WORKDIR /app
+WORKDIR /todo-api
 
 # Copy go.mod and go.sum files
 COPY go.mod go.sum ./
@@ -14,7 +14,7 @@ COPY . .
 
 COPY cmd/ ./cmd/
 
-RUN ls -la /app
+RUN ls -la /todo-api
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o todoapp ./main.go
@@ -30,4 +30,4 @@ RUN chmod +x todoapp
 
 EXPOSE 5000
 
-CMD ["./todoapp", "start", "-f", "/app/config.yml"]
+ENTRYPOINT ["./todoapp"]
